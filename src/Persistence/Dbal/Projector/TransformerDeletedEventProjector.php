@@ -14,12 +14,11 @@ use Ergonode\Core\Domain\Entity\AbstractId;
 use Ergonode\EventSourcing\Infrastructure\DomainEventInterface;
 use Ergonode\EventSourcing\Infrastructure\Exception\UnsupportedEventException;
 use Ergonode\EventSourcing\Infrastructure\Projector\DomainEventProjectorInterface;
-use Ergonode\Transformer\Domain\Event\ProcessorCreatedEvent;
-use Ergonode\Transformer\Domain\ValueObject\ProcessorStatus;
+use Ergonode\Transformer\Domain\Event\TransformerDeletedEvent;
 
 /**
  */
-class ProcessorCreatedEventProjector implements DomainEventProjectorInterface
+class TransformerDeletedEventProjector implements DomainEventProjectorInterface
 {
     /**
      * @var Connection
@@ -39,7 +38,7 @@ class ProcessorCreatedEventProjector implements DomainEventProjectorInterface
      */
     public function supports(DomainEventInterface $event): bool
     {
-        return $event instanceof ProcessorCreatedEvent;
+        return $event instanceof TransformerDeletedEvent;
     }
 
     /**
@@ -50,24 +49,14 @@ class ProcessorCreatedEventProjector implements DomainEventProjectorInterface
     public function projection(AbstractId $aggregateId, DomainEventInterface $event): void
     {
         if (!$this->supports($event)) {
-            throw new UnsupportedEventException($event, ProcessorCreatedEvent::class);
+            throw new UnsupportedEventException($event, TransformerDeletedEvent::class);
         }
 
-        $this->connection->transactional(function () use ($aggregateId, $event) {
-            $date = date('Y-m-d H:i:s');
-
-            $this->connection->insert(
-                'importer.processor',
-                [
-                    'created_at' => $date,
-                    'updated_at' => $date,
-                    'id' => $aggregateId->getValue(),
-                    'import_id' => $event->getImportId()->getValue(),
-                    'transformer_id' => $event->getTransformerId()->getValue(),
-                    'action' => $event->getAction(),
-                    'status' => ProcessorStatus::CREATED,
-                ]
-            );
-        });
+        $this->connection->delete(
+            'importer.transformer',
+            [
+                'id' => $aggregateId->getValue(),
+            ]
+        );
     }
 }
