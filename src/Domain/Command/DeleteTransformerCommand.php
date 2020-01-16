@@ -10,32 +10,31 @@ declare(strict_types = 1);
 namespace Ergonode\Transformer\Domain\Command;
 
 use Ergonode\EventSourcing\Infrastructure\DomainCommandInterface;
-use Ergonode\Transformer\Domain\Entity\ProcessorId;
-use JMS\Serializer\Annotation as JMS;
+use Ergonode\Transformer\Domain\Entity\TransformerId;
 
 /**
  */
-class EndProcessImportLineCommand implements DomainCommandInterface
+class DeleteTransformerCommand implements DomainCommandInterface
 {
     /**
-     * @var ProcessorId
+     * @var TransformerId
      *
-     * @JMS\Type("Ergonode\Transformer\Domain\Entity\ProcessorId")
+     * @JMS\Type("Ergonode\Transformer\Domain\Entity\TransformerId")
      */
     private $id;
 
     /**
-     * @param ProcessorId $id
+     * @param TransformerId $id
      */
-    public function __construct(ProcessorId $id)
+    public function __construct(TransformerId $id)
     {
         $this->id = $id;
     }
 
     /**
-     * @return ProcessorId
+     * @return TransformerId
      */
-    public function getId(): ProcessorId
+    public function getId(): TransformerId
     {
         return $this->id;
     }
