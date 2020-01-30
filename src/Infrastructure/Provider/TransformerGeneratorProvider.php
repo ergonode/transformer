@@ -7,14 +7,13 @@
 
 declare(strict_types = 1);
 
-namespace Ergonode\Transformer\Infrastructure\Generator;
+namespace Ergonode\Transformer\Infrastructure\Provider;
 
-use Ergonode\Transformer\Domain\Entity\Transformer;
-use Ergonode\Transformer\Domain\Entity\TransformerId;
+use Ergonode\Transformer\Infrastructure\Generator\TransformerGeneratorStrategyInterface;
 
 /**
  */
-class TransformerGenerator
+class TransformerGeneratorProvider
 {
     /**
      * @var TransformerGeneratorStrategyInterface[]
@@ -30,19 +29,15 @@ class TransformerGenerator
     }
 
     /**
-     * @param string $name
      * @param string $type
-     * @param array  $options
      *
-     * @return Transformer
-     *
-     * @throws \Exception
+     * @return TransformerGeneratorStrategyInterface
      */
-    public function generate(string $name, string $type, array $options = []): Transformer
+    public function provide(string $type): TransformerGeneratorStrategyInterface
     {
         foreach ($this->strategies as $strategy) {
             if (strtoupper($type) === $strategy->getType()) {
-                return $strategy->generate(TransformerId::fromKey($type), $name, $type, $options);
+                return $strategy;
             }
         }
 
